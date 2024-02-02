@@ -1,0 +1,147 @@
+# golangci-lint configuration file
+# see: https://github.com/golangci/golangci/wiki/Configuration
+
+# Options for analysis running
+run:
+  # Which dirs to skip: they won't be analyzed;
+  # Can use regexp here: generated.*, regexp is applied on full path;
+  # Default value is empty list, but next dirs are always skipped independently
+  # From this option's value:
+  #   	vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
+  skip-dirs:
+    - bin
+
+# All available settings of specific linters
+linters-settings:
+
+  govet:
+    # Report about shadowed variables
+    check-shadowing: true
+
+  golint:
+    # Minimal confidence for issues, default is 0.8
+    min-confidence: 0
+
+  goimports:
+    # Put imports beginning with prefix after 3rd-party packages;
+    # It's a comma-separated list of prefixes
+    local-prefixes: github.com/kouzoh/mercari-category-home-jp, github.com/kouzoh
+
+  gocyclo:
+    # Minimal code complexity to report, 30 by default (but we recommend 10-20)
+    min-complexity: 10
+
+  maligned:
+    # Print struct with more effective memory layout or not, false by default
+    suggest-new: true
+
+  dupl:
+    # Tokens count to trigger issue, 150 by default
+    threshold: 100
+
+  goconst:
+    # Minimal length of string constant, 3 by default
+    min-len: 3
+    # Minimal occurrences count to trigger, 3 by default
+    min-occurrences: 2
+
+  depguard:
+    list-type: blacklist
+    include-go-root: false
+    packages:
+    # - github.com/example/package
+
+  misspell:
+    # Correct spellings using locale preferences for US or UK.
+    # Default is to use a neutral variety of English.
+    # Setting locale to US will correct the British spelling of 'colour' to 'color'.
+    locale: US
+    ignore-words:
+    # - colour
+
+  lll:
+    # Max line length, lines longer will be reported. Default is 120.
+    # '\t' is counted as 1 character by default, and can be changed with the tab-width option
+    line-length: 120
+
+  nakedret:
+    # Make an issue if func has more lines of code than this setting and it has naked returns; default is 30
+    max-func-lines: 0
+
+  gocritic:
+    # Which checks should be disabled; can't be combined with 'enabled-checks'; default is empty
+    disabled-checks:
+      - wrapperFunc
+    # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint` run to see all tags and checks.
+    # Empty list by default. See https://github.com/go-critic/go-critic#usage -> section "Tags".
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+
+# Settings for enabling and disabling linters
+linters:
+  #  This is the ideal way to configure linters
+  #  REF: https://github.com/golangci/golangci-lint/blob/b9eef79121fff235d0d794c176ffa2b3d9bd422f/.golangci.yml#L59-L60
+  disable-all: true
+  enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    #    - dupl  Want to have a lot of duplicated logic for writing helper funcs for returning hardcoded response for tests
+    - errcheck
+    - funlen
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    #    - gomnd
+    #    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - interfacer
+    #    - lll
+    - misspell
+    - nakedret
+    #    - rowserrcheck
+    - scopelint
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - whitespace
+
+# Configuration of issue rules
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude lll issues for long lines with go:generate
+    - linters:
+        - lll
+      source: "^//go:generate "
+    # Exclude shadow checking on the variable named err
+    - text: "shadow: declaration of \"err\""
+      linters:
+        - govet
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - dupl
+        - gomnd
+        - gocyclo
+        - funlen
+        - lll
+    # Temporary exclude on our main function
+    - path: cmd/server
+      linters:
+        - gocyclo
