@@ -1,6 +1,8 @@
-# AB-BACKEND
+# AB-BACKEND (obsolete)
 
-The backend server for artbasketai written in golang
+## Decided to go with serverless setup but this is still a good starting template for dockerized server deployment
+
+The backend server for artbasketai written in golang.
 
 ## Prerequisistes
 
